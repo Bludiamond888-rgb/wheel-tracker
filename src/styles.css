@@ -98,3 +98,24 @@ h2{font-size:18px;margin:0 0 10px}
 .toggle input:checked{background:#d4af37}.toggle input:checked::after{left:23px}
 .empty p{color:var(--mut)}
 .fld input::placeholder{color:#4f5b7d}
+
+/* Home: fixed, non-scrolling full-height layout */
+html.home-lock,html.home-lock body{overflow:hidden;overscroll-behavior:none;height:100%}
+html.home-lock body{position:fixed;inset:0;width:100%}
+.app.lock{position:fixed;inset:0;height:100dvh;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none}
+.app.lock .sample-banner{position:relative;flex:none;padding-top:calc(env(safe-area-inset-top) + 6px);padding-bottom:6px;font-size:12px}
+.app.lock main{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;overflow:hidden;padding-bottom:calc(env(safe-area-inset-bottom) + 72px)}
+.app.lock .sample-banner+main{padding-top:6px}
+.app.lock .top{margin:2px 0 clamp(6px,1.4dvh,14px);flex:none}
+.app.lock .summary{flex:none;gap:8px;margin-bottom:clamp(6px,1.4dvh,16px)}
+.app.lock .tile{padding:clamp(6px,1.1dvh,12px) 14px}
+.app.lock .tile b{font-size:clamp(18px,2.6dvh,24px)}
+.app.lock .tile span{font-size:11px}
+.app.lock .sec{flex:none;margin:2px 4px 6px}
+.app.lock .carousel{flex:1;min-height:0;margin-bottom:4px;padding-bottom:8px;touch-action:pan-x;overscroll-behavior:contain}
+.app.lock .wcard{min-height:0;padding:clamp(8px,1.4dvh,16px) 12px 10px}
+.app.lock .wbox{flex:1;min-height:0;width:100%;container-type:size;display:flex;align-items:center;justify-content:center}
+.app.lock .wbox .wheel{width:min(100cqw,100cqh,340px);height:min(100cqw,100cqh,340px)}
+.app.lock .next{flex:none;margin:6px 0 0;font-size:13px}
+.app.lock .note{flex:none;font-size:11px;margin:0 8px}
+.app.lock .empty{flex:none}

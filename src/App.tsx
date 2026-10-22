@@ -34,8 +34,28 @@ export default function App() {
   else if (route === 'more') page = <More sample={sample} toggleSample={toggleSample} data={data} setData={setData} />
   else page = <Home views={views} />
 
+  const lock = route === 'home'
+  useEffect(() => {
+    if (!lock) return
+    const root = document.documentElement
+    root.classList.add('home-lock')
+    let sx = 0, sy = 0
+    const start = (e: TouchEvent) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY }
+    const move = (e: TouchEvent) => {
+      if (e.touches.length > 1) return
+      const t = e.target as Element | null
+      if (t?.closest?.('.sheet')) return // bottom sheets scroll internally
+      const dx = Math.abs(e.touches[0].clientX - sx), dy = Math.abs(e.touches[0].clientY - sy)
+      if (t?.closest?.('.carousel') && dx >= dy) return // horizontal swipe ok
+      if (e.cancelable) e.preventDefault()
+    }
+    document.addEventListener('touchstart', start, { passive: true })
+    document.addEventListener('touchmove', move, { passive: false })
+    return () => { root.classList.remove('home-lock'); document.removeEventListener('touchstart', start); document.removeEventListener('touchmove', move) }
+  }, [lock])
+
   return (
-    <div className="app">
+    <div className={'app' + (lock ? ' lock' : '')}>
       {sample && <div className="sample-banner" role="status">🧪 SAMPLE DATA — fictional demo trades, not real. <button onClick={() => toggleSample(false)}>Turn off</button></div>}
       <main>{page}</main>
       <nav className="tabs">
@@ -53,7 +73,6 @@ function Home({ views }: { views: CycleView[] }) {
   const active = views.filter((v) => !v.complete)
   const s = stats(views)
   const atWork = active.reduce((a, v) => a + (v.shares ? (v.assignStrike ?? 0) * v.shares : v.open ? v.collateral : 0), 0)
-  const opens = active.filter((v) => v.open).sort((a, b) => a.open!.dte - b.open!.dte)
   return (
     <>
       <header className="top"><div><div className="hello">Good to see you, Chairman</div><h1>Wheel Tracker</h1></div>
@@ -76,7 +95,7 @@ function Home({ views }: { views: CycleView[] }) {
           <div className="carousel" data-testid="carousel">
             {active.map((v) => (
               <a key={v.cycle.id} className="wcard" href={`#/c/${v.cycle.id}`} style={{ ['--c' as string]: COLORS[v.stage] }}>
-                <Wheel stage={v.stage} premium={v.premium} ticker={v.cycle.ticker} size={250} />
+                <div className="wbox"><Wheel stage={v.stage} premium={v.premium} ticker={v.cycle.ticker} size={250} /></div>
                 <div className="wmeta">
                   <span className="pill" style={{ background: COLORS[v.stage] }}>{v.stage + 1}. {STAGE_SHORT[v.stage]}</span>
                   {v.open && <span className={'dte' + (v.open.dte <= 7 ? ' hot' : '')}>{v.open.kind.toUpperCase()} ${v.open.strike} · {v.open.dte} DTE</span>}
@@ -85,15 +104,6 @@ function Home({ views }: { views: CycleView[] }) {
               </a>
             ))}
           </div>
-          {opens.length > 0 && <>
-            <h2 className="sec">Open positions</h2>
-            <div className="card list">{opens.map((v) => (
-              <a key={v.cycle.id} className="row" href={`#/c/${v.cycle.id}`}>
-                <span className="tk" style={{ background: COLORS[v.stage] }}>{v.cycle.ticker}</span>
-                <span className="grow">{v.open!.contracts}× {v.open!.kind} ${v.open!.strike}<small>exp {fmtDate(v.open!.expiry)}</small></span>
-                <span className={'dtebig' + (v.open!.dte <= 7 ? ' hot' : '')}>{Math.max(0, v.open!.dte)}<small>DTE</small></span>
-              </a>))}</div>
-          </>}
         </>
       )}
       <p className="note">ℹ️ No live market data — everything is entered manually by you.</p>
