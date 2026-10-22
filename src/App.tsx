@@ -237,7 +237,7 @@ function Stats({ views }: { views: CycleView[] }) {
         {done.length === 0 && <div className="row muted">No completed cycles yet.</div>}
         {done.map((v) => (
           <a key={v.cycle.id} className="row" href={`#/c/${v.cycle.id}`}>
-            <span className="tk" style={{ background: (v.realized ?? 0) > 0 ? '#10b981' : '#ef4444' }}>{v.cycle.ticker}</span>
+            <span className="tk" style={{ background: (v.realized ?? 0) > 0 ? '#2f7d5b' : '#9b3d48' }}>{v.cycle.ticker}</span>
             <span className="grow">{fmtDate(v.startDate)} → {fmtDate(v.endDate)}<small>{v.days} days · premium {$(v.premium, 0)}</small></span>
             <span className="right"><b className={(v.realized ?? 0) >= 0 ? 'pos' : 'neg'}>{$(v.realized ?? 0, 0)}</b><small>{pct(v.annualized)}/yr</small></span>
           </a>))}
