@@ -1,0 +1,6 @@
+{
+  "name": "wheel-tracker", "private": true, "version": "1.0.0", "type": "module",
+  "scripts": { "dev": "vite", "build": "tsc -b && vite build", "preview": "vite preview", "test": "vitest run", "screens": "node scripts/screenshots.mjs" },
+  "dependencies": { "react": "^19.2.8", "react-dom": "^19.2.8" },
+  "devDependencies": { "@types/node": "^24.13.3", "@types/react": "^19.2.18", "@types/react-dom": "^19.2.7", "@vitejs/plugin-react": "^6.1.1", "playwright": "^1.64.1", "typescript": "~6.0.2", "vite": "^8.3.0", "vitest": "^4.1.12" }
+}
