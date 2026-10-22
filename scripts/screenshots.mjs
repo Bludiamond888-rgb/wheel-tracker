@@ -21,7 +21,7 @@ await p.goto(url + '#/'); await p.click('.wcard:has-text("AMD")'); await p.click
 await p.goto(url + '#/'); await p.click('.wcard:has-text("AAPL")')
 await p.click('[data-testid=add-trade]'); await p.waitForSelector('[data-testid=trade-form]')
 // log "called away" to show the spin: capture mid-animation
-await p.click('.chip:has-text("Called away")'); await p.click('button:has-text("Save trade")'); await p.waitForTimeout(500)
-await p.screenshot({ path: out('3b-spin-mid.png') }); await p.waitForTimeout(1600); await p.screenshot({ path: out('3c-after-spin.png') })
+await p.click('.chip:has-text("Called away")'); await p.click('button:has-text("Save trade")'); await p.waitForTimeout(1100)
+await p.screenshot({ path: out('3b-spin-mid.png') }); await p.waitForTimeout(3400); await p.screenshot({ path: out('3c-jackpot.png') }); await p.waitForTimeout(4500); await p.screenshot({ path: out('3d-after-spin.png') })
 await p.goto(url + '#/stats'); await p.waitForTimeout(400); await p.screenshot({ path: out('4-stats.png') })
 await b.close(); server.close(); console.log('done')

@@ -40,14 +40,27 @@ h2{font-size:18px;margin:0 0 10px}
 .note{font-size:13px;color:var(--mut);text-align:center;margin:18px 10px}
 .wheelwrap{display:flex;justify-content:center;margin-top:-4px}
 .hint{text-align:center;color:var(--mut);font-size:13px;margin:2px 0 12px}
-.wheel{max-width:100%;height:auto;overflow:visible;filter:drop-shadow(0 12px 30px rgba(0,0,0,.45))}
-.rotor{transform-box:fill-box;transform-origin:center;transition:transform 1.6s cubic-bezier(.2,.9,.25,1.08)}
-.counter{transform-box:fill-box;transform-origin:center;transition:transform 1.6s cubic-bezier(.2,.9,.25,1.08)}
-.seg path{transition:opacity .3s,d .4s}
-.marker{animation:pulse 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-.spinning .marker{animation:bounce .4s ease-in-out 4}
-@keyframes pulse{50%{opacity:.9;transform:translateY(2px)}}
-@keyframes bounce{50%{transform:translateY(5px)}}
+.wheel{max-width:100%;height:auto;overflow:visible;filter:drop-shadow(0 14px 28px rgba(0,0,0,.5))}
+.wheel text{pointer-events:none;user-select:none}
+.bulb{animation:chase 1.2s steps(1,end) infinite}
+.bulb.b1{animation-name:chase2}
+.spinning .bulb{animation-duration:.3s}
+@keyframes chase{0%{opacity:1}50%{opacity:.25}}
+@keyframes chase2{0%{opacity:.25}50%{opacity:1}}
+.litedge{animation:glowe 1.6s ease-in-out infinite}
+@keyframes glowe{50%{opacity:.45}}
+.hintrow{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 12px}
+.hintrow .hint{margin:0}
+.spinbtn{padding:6px 14px;font-size:13px;font-weight:800;border-radius:999px;background:linear-gradient(135deg,#f0cf6b,#b8891f);color:#1a1205;border:0;box-shadow:0 3px 10px rgba(212,175,55,.35)}
+.burst{position:fixed;left:50%;top:32%;width:0;height:0;z-index:60;pointer-events:none}
+.burst span{position:absolute;font-size:22px;transform:translate(-50%,-50%);animation:fly 1.6s cubic-bezier(.15,.7,.3,1) forwards;opacity:0}
+.burst .spark{font-size:16px}
+@keyframes fly{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y) + 140px)) scale(1) rotate(320deg)}}
+.jackpot{position:fixed;left:50%;top:47%;transform:translateX(-50%);z-index:61;text-align:center;padding:14px 26px;border-radius:18px;background:linear-gradient(135deg,#fff1b0,#d4af37 45%,#9a6f17);color:#1a1205;box-shadow:0 0 0 3px #fff3c4,0 12px 40px rgba(0,0,0,.55);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.jackpot b{display:block;font-size:30px;font-weight:900;letter-spacing:3px;text-shadow:0 2px 0 #fff6cf}
+.jackpot span{font-size:14px;font-weight:800}
+@keyframes pop{0%{transform:translateX(-50%) scale(.3);opacity:0}}
+@media (prefers-reduced-motion:reduce){.bulb,.litedge,.jackpot{animation:none!important}}
 .next-card{padding:16px;border-left:6px solid var(--c)}
 .eyebrow{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--c)}
 .nexttxt{color:var(--ink);font-size:17px;font-weight:700;margin:6px 0 14px;line-height:1.35}

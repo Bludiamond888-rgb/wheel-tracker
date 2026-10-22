@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { deriveCycle, stats, suggestion, todayStr, tradesCsv, STAGES, STAGE_SHORT, TYPE_LABEL, type CycleView, type Data, type Trade, type TradeType } from './calc'
 import { load, save, sampleData, sampleOn, setSampleOn, uid, validate } from './store'
-import { Wheel, COLORS } from './Wheel'
+import { Wheel, COLORS, CoinBurst, soundOn, setSoundOn } from './Wheel'
 
 const $ = (n: number, d = 2) => (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })
 const pct = (n: number) => (n * 100).toFixed(1) + '%'
@@ -103,6 +103,15 @@ function Home({ views }: { views: CycleView[] }) {
 
 function Detail({ v, adding, data, setData }: { v: CycleView; adding: boolean; data: Data; setData: (d: Data) => void }) {
   const [sel, setSel] = useState<number | null>(null)
+  const [replay, setReplay] = useState(0)
+  const [party, setParty] = useState<null | { pl: number }>(null)
+  const wasDone = useRef(v.complete), pending = useRef(false)
+  useEffect(() => { if (v.complete && !wasDone.current) pending.current = true; wasDone.current = v.complete }, [v.complete])
+  const spinEnd = () => {
+    if (!pending.current) return
+    pending.current = false; setParty({ pl: v.realized ?? v.pl })
+    setTimeout(() => setParty(null), 4200)
+  }
   const shown = sel === null ? v.trades : v.trades.filter((t) => v.stageOf[t.id] === sel)
   const del = (t: Trade) => { if (confirm(`Delete ${TYPE_LABEL[t.type]} on ${t.date}?`)) setData({ ...data, trades: data.trades.filter((x) => x.id !== t.id) }) }
   const endCycle = () => { if (confirm('End this cycle (flat, no shares)?')) setData({ ...data, cycles: data.cycles.map((c) => c.id === v.cycle.id ? { ...c, closedDate: todayStr() } : c) }) }
@@ -110,8 +119,9 @@ function Detail({ v, adding, data, setData }: { v: CycleView; adding: boolean; d
   return (
     <>
       <header className="top"><a className="btn ghost" href="#/">‹ Wheels</a><h1>{v.cycle.ticker}</h1><span style={{ width: 70 }} /></header>
-      <div className="wheelwrap"><Wheel stage={v.stage} premium={v.premium} ticker={v.cycle.ticker} selected={sel} onSelect={(i) => setSel(sel === i ? null : i)} size={320} complete={v.complete} /></div>
-      <p className="hint">Tap a stage to see its trades</p>
+      <div className="wheelwrap"><Wheel stage={v.stage} premium={v.premium} ticker={v.cycle.ticker} selected={sel} onSelect={(i) => setSel(sel === i ? null : i)} size={320} complete={v.complete} replay={replay} onSpinEnd={spinEnd} /></div>
+      <div className="hintrow"><p className="hint">Tap a stage to see its trades</p><button className="btn spinbtn" data-testid="spin" onClick={() => setReplay((r) => r + 1)}>🎰 Spin</button></div>
+      {party && <><CoinBurst />{party.pl > 0 && <div className="jackpot" role="status"><b>JACKPOT!</b><span>Cycle complete · Realized {$(party.pl)}</span></div>}</>}
       <div className="card next-card" style={{ ['--c' as string]: COLORS[v.stage] }}>
         <div className="eyebrow">Stage {v.stage + 1} · {STAGES[v.stage]}</div>
         <div className="nexttxt">{suggestion(v)}</div>
@@ -255,12 +265,15 @@ function More({ sample, toggleSample, data, setData }: { sample: boolean; toggle
       .catch((err) => setMsg('Import failed: ' + err.message)); e.target.value = ''
   }
   const stamp = todayStr()
+  const [sound, setSound] = useState(soundOn())
   return (
     <>
       <header className="top"><h1>Settings</h1></header>
       <div className="card pad">
         <label className="toggle"><span><b>Sample data</b><small>Shows a fictional demo portfolio. Your real data is kept separately and untouched.</small></span>
           <input type="checkbox" checked={sample} onChange={(e) => toggleSample(e.target.checked)} data-testid="sample-toggle" /></label>
+        <label className="toggle"><span><b>Spin sound</b><small>A soft tick as the wheel's pegs pass the flapper.</small></span>
+          <input type="checkbox" checked={sound} onChange={(e) => { setSoundOn(e.target.checked); setSound(e.target.checked) }} data-testid="sound-toggle" /></label>
       </div>
       <div className="card pad stack">
         <h2>Backup {sample && <small className="muted">(sample mode — exports the demo)</small>}</h2>
